@@ -1,11 +1,27 @@
+#![allow(unused_variables)]
+#![allow(dead_code)]
+#![allow(non_snake_case)]
+
 use postgres::{Client, NoTls};
 use std::{env};
-
+use regex::{Regex, RegexSetBuilder};
 // home/ryzenmaster/.cargo/config -> path to env
 fn main () {
     //select(String::from("SELECT id, name, data FROM person")).unwrap();
-    generic(String::from("INSERT INTO person (name, data) VALUES ($1, $2)")).unwrap();
+    /* match generic(String::from("INSERT INTO person (name, data) VALUES ($1, $2)")) {
+        Ok(updated) => println!("updated {} row(s)", updated),
+        Err(e) => println!("Error: {}", e),
+    }; */
+    let ype: UseCase = defineUseCase(String::from("drop INTO person (name, data) VALUES ($1, $2)"));
+    match ype {
+        UseCase::ReturnValue => println!("will return the value"),
+        UseCase::ReturnCount => println!("will return the rows affected"),
+        UseCase::ReturnBool => println!("will return true or false"),
+        UseCase::Unknown => println!("bad sintax"),
+    };
 }
+
+
 
 fn select (query: String) -> Result<(), postgres::Error> {
     let mut client: Client = connect();
@@ -19,11 +35,12 @@ fn select (query: String) -> Result<(), postgres::Error> {
     Ok(())
 }
 
-fn generic (query: String) -> Result<(), postgres::Error> {
+fn generic (query: String) -> Result<u64, postgres::Error> {
     let mut client: Client = connect();
-    client.execute(&query, &[&String::from("Rust"), &String::from("Rust is awesome!")])?;
+    let name:String = String::from("Gustavo");
+    let data:String = String::from("Rust is awesome!");
+    client.execute(&query, &[&name, &data.as_bytes()])
     //client.execute(&query, &[])?;
-    Ok(())
 }
 
 fn connect () -> Client {
@@ -34,5 +51,51 @@ fn connect () -> Client {
     match Client::connect(&format!("host={} user={} password={} dbname={}", host, user, password, dbname), NoTls) {
         Ok(client) => client,
         Err(err) => panic!("Error connecting: {}", err),
+    }
+}
+
+enum UseCase {
+    ReturnValue,
+    ReturnCount,
+    ReturnBool,
+    Unknown,
+}
+/* querie types {
+    Select,
+    Update,
+    Insert,
+    Delete,
+    Create,
+    Drop,
+    Alter,
+    Grant,
+    Revoke,
+    Begin,
+    Commit,
+    Rollback,
+    Unknown,
+} */
+
+fn defineUseCase(query: String) -> UseCase {
+    let set = RegexSetBuilder::new(&[
+        r"^select",
+        r"^insert",
+        r"^update",
+        r"^delete",
+        r"^alter",
+        r"^grant",
+        r"^revoke",
+        r"^drop",
+        r"^create",
+        //r"/^begin",
+        //r"/^commit",
+        //r"/^rollback",
+    ]).case_insensitive(true).build().unwrap();
+    let matches: Vec<usize> = set.matches(&query).into_iter().collect();
+    match matches[0] {
+        0 => UseCase::ReturnValue,
+        1..=3 => UseCase::ReturnCount,
+        4..=8 => UseCase::ReturnBool,
+        _ => UseCase::Unknown,
     }
 }
