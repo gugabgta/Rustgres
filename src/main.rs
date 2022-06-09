@@ -1,37 +1,38 @@
 #![allow(unused_variables)]
 #![allow(dead_code)]
 #![allow(non_snake_case)]
+#![allow(unused_imports)]
 
-use postgres::{Client, NoTls};
+use postgres::{Client, NoTls, SimpleQueryMessage};
 use std::{env};
 use regex::{Regex, RegexSetBuilder};
 // home/ryzenmaster/.cargo/config -> path to env
 fn main () {
-    //select(String::from("SELECT id, name, data FROM person")).unwrap();
-    /* match generic(String::from("INSERT INTO person (name, data) VALUES ($1, $2)")) {
-        Ok(updated) => println!("updated {} row(s)", updated),
-        Err(e) => println!("Error: {}", e),
-    }; */
-    let ype: UseCase = defineUseCase(String::from("drop INTO person (name, data) VALUES ($1, $2)"));
+    /* let ype: UseCase = defineUseCase(String::from("drop INTO person (name, data) VALUES ($1, $2)"));
     match ype {
         UseCase::ReturnValue => println!("will return the value"),
         UseCase::ReturnCount => println!("will return the rows affected"),
         UseCase::ReturnBool => println!("will return true or false"),
         UseCase::Unknown => println!("bad sintax"),
-    };
+    }; */
+    let query = String::from("select * from person where name = 'Gustavo'");
+    select(query).unwrap();
 }
-
-
 
 fn select (query: String) -> Result<(), postgres::Error> {
     let mut client: Client = connect();
-    for row in client.query(&query, &[])? {
-        let id: i32 = row.get(0);
-        let name: &str = row.get(1);
-        let data: Option<&[u8]> = row.get(2);
-
-        println!("found person: {} {} {:?}", id, name, data);
+    let row = client.simple_query(&query).unwrap();
+    //accessing the first row
+    for i in row.iter() {
+        match i {
+            SimpleQueryMessage::Row(b) => println!("{}, {}",
+                b.get(0).unwrap(),
+                b.get(1).unwrap()
+            ),
+            SimpleQueryMessage::CommandComplete(dk) => println!("modified {} rows", dk),
+        _ => println!("whatever"),
     }
+    };
     Ok(())
 }
 
@@ -60,21 +61,6 @@ enum UseCase {
     ReturnBool,
     Unknown,
 }
-/* querie types {
-    Select,
-    Update,
-    Insert,
-    Delete,
-    Create,
-    Drop,
-    Alter,
-    Grant,
-    Revoke,
-    Begin,
-    Commit,
-    Rollback,
-    Unknown,
-} */
 
 fn defineUseCase(query: String) -> UseCase {
     let set = RegexSetBuilder::new(&[
