@@ -8,3 +8,7 @@ edition = "2021"
 [dependencies]
 postgres = "0.19.3"
 regex = "1.5.6"
+
+tokio = "0.3.6"
+rsocket_rust = "0.7.0"
+rsocket_rust_transport_websocket = "0.7.0"
