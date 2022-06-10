@@ -16,24 +16,41 @@ fn main () {
         UseCase::Unknown => println!("bad sintax"),
     }; */
     let query = String::from("select * from person where name = 'Gustavo'");
-    select(query).unwrap();
+    match select(query) {
+        Ok(x) => println!("{:?}", x),
+        Err(e) => println!("{:?}", e),
+    };
 }
 
-fn select (query: String) -> Result<(), postgres::Error> {
+fn select (query: String) -> Result<Vec<Vec<String>>, postgres::Error> {
     let mut client: Client = connect();
-    let row = client.simple_query(&query).unwrap();
-    //accessing the first row
-    for i in row.iter() {
-        match i {
-            SimpleQueryMessage::Row(b) => println!("{}, {}",
-                b.get(0).unwrap(),
-                b.get(1).unwrap()
-            ),
-            SimpleQueryMessage::CommandComplete(dk) => println!("modified {} rows", dk),
-        _ => println!("whatever"),
-    }
+    let rows: Vec<SimpleQueryMessage> = match client.simple_query(&query) {
+        Ok(rows) => rows,
+        Err(e) => {
+            println!("{}", e);
+            return Err(e);
+        }
     };
-    Ok(())
+
+    let mut result: Vec<Vec<String>> = Vec::new();
+    //accessing the first row
+    for i in rows.iter() {
+        let test = match i {
+            SimpleQueryMessage::Row(b) => {
+                let mut iter: Vec<String> = Vec::new();
+                for num in 0..b.len() {
+                    iter.push(match b.get(num) {
+                        Some(x) => x.to_string(),
+                        None => String::from("null"),
+                    })
+                }
+                result.push(iter);
+            },
+            SimpleQueryMessage::CommandComplete(dk) => result.push(vec![String::from(format!("modified {} rows", dk))]),
+            _ => result.push(vec![String::from("not implemented")]),
+        };
+    };
+    Ok(result)
 }
 
 fn generic (query: String) -> Result<u64, postgres::Error> {
