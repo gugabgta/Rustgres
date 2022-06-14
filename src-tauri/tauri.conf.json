@@ -1,14 +1,13 @@
 {
   "$schema": "..\\node_modules/@tauri-apps/cli\\schema.json",
   "build": {
-    "beforeBuildCommand": "",
-    "beforeDevCommand": "",
-    "devPath": "../dist",
-    "distDir": "../dist",
-    "withGlobalTauri": true
+    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "yarn dev",
+    "devPath": "http://localhost:8080",
+    "distDir": "../public"
   },
   "package": {
-    "productName": "tauri-windows",
+    "productName": "svelte",
     "version": "0.1.0"
   },
   "tauri": {
@@ -30,7 +29,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "gustavo_brandao_eh_legal",
+      "identifier": "com.tauri.dev",
       "longDescription": "",
       "macOS": {
         "entitlements": null,

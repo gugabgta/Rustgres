@@ -1,1 +1,1 @@
-Testing postgres implementation in rust to use in another project
+Testing postgres implementation in rust, now I'm testing svelte and Tauri as well

@@ -26,7 +26,8 @@ fn main() {
 }
 
 #[tauri::command]
-fn randInt() -> f32{
+fn randInt() -> f32 {
+    println!("oi");
     let mut source = random::default();/* .seed([42, 69]) ; */
     let val: u16 = source.read::<u16>();
     let result: f32 = val as f32 / 65535.0;
