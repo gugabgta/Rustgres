@@ -1,12 +1,21 @@
 {
   "name": "tauri-windows",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@tauri-apps/api": "^1.0.0-rc.6"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1.0.0-rc.13"
+    "@sveltejs/vite-plugin-svelte": "^1.0.0-next.30",
+    "@tauri-apps/cli": "^1.0.0-rc.13",
+    "svelte": "^3.44.0",
+    "vite": "^2.9.9"
   }
 }
