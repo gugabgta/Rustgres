@@ -19,7 +19,8 @@ use random::Source;
 fn main() {
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
-            randInt
+            randInt,
+            select,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -35,13 +36,14 @@ fn randInt() -> f32 {
     result.into() //returns value to front end
 }
 
-fn select (query: String) -> Result<Vec<Vec<String>>, postgres::Error> {
-    let mut client: Client = connect();
+#[tauri::command]
+fn select (query: String) -> Vec<Vec<String>> {
+    let mut client: Client = connect().expect("error while connecting to database");
     let rows: Vec<SimpleQueryMessage> = match client.simple_query(&query) {
         Ok(rows) => rows,
         Err(e) => {
             println!("{}", e);
-            return Err(e);
+            return vec![];
         }
     };
 
@@ -63,26 +65,24 @@ fn select (query: String) -> Result<Vec<Vec<String>>, postgres::Error> {
             _ => result.push(vec![String::from("not implemented")]),
         };
     };
-    Ok(result)
+    result.into()
 }
 
 fn generic (query: String) -> Result<u64, postgres::Error> {
-    let mut client: Client = connect();
+    let mut client: Client = connect().expect("error while connecting to database");
     let name:String = String::from("Gustavo");
     let data:String = String::from("Rust is awesome!");
     client.execute(&query, &[&name, &data.as_bytes()])
     //client.execute(&query, &[])?;
 }
 
-fn connect () -> Client {
-    let host: String = env::var("HOST").unwrap();
-    let user: String = env::var("USERNAME").unwrap();
-    let password: String = env::var("PASSWORD").unwrap();
-    let dbname: String = env::var("DBNAME").unwrap();
-    match Client::connect(&format!("host={} user={} password={} dbname={}", host, user, password, dbname), NoTls) {
-        Ok(client) => client,
-        Err(err) => panic!("Error connecting: {}", err),
-    }
+fn connect () -> Result<Client, postgres::Error> {
+    let host: String = String::from("localhost");
+    let user: String = String::from("postgres");
+    let password: String = String::from("password123");
+    let dbname: String = String::from("postgres");
+    println!("host={};user={};password={};dbname={}", host, user, password, dbname);
+    Client::connect(&format!("host={} user={} password={} dbname={}", host, user, password, dbname), NoTls)
 }
 
 enum UseCase {
