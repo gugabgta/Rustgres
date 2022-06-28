@@ -1,18 +1,15 @@
-<div>
-    side-menu
+<div class="fill text-white bg-dark">
+    <span class="fs-4">Sidebar</span>
+    <hr>
+    <hr>
 </div>
-
 <script>
 
 </script>
 
 <style>
-    div {
+    .fill {
         width: 100%;
         height: 100%;
-        justify-content: center;
-        align-items: center;
-        border-radius: 1px;
-        background-color: rgb(0, 140, 255);
     }
 </style>

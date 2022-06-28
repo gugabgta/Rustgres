@@ -27,8 +27,14 @@
     "typescript": "^4.0.0"
   },
   "dependencies": {
+    "@jamescoyle/svelte-icon": "^0.1.1",
+    "@jamescoyle/svg-icon": "^0.1.1",
+    "@mdi/js": "^6.7.96",
     "@tauri-apps/api": "^1.0.0-rc.6",
+    "bootstrap": "^5.2.0-beta1",
+    "bulma": "^0.9.4",
     "codemirror": "^6.0.0",
+    "material-design-icons": "^3.0.1",
     "sirv-cli": "^2.0.0"
   }
 }

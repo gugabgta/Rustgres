@@ -1,38 +1,53 @@
-<div class="">
-	<div class="row row-cols-2">
-		<div id="side-menu" class="col">
-			<SideMenu />
-		</div>
-		<div id="textarea" class="col">
-			<QueryZone />
-			<Results />
-		</div>
+<div class="wrapper row">
+	<div class="sidebar">
+		<SideMenu />
+	</div>
+	<div class="content">
+		<Tabs />
+		<FunctionsMenu
+			on:play={ eventPlay }
+			on:stop={ eventStop }
+		/>
+		<QueryZone />
+		<Results bind:queryResults={ queryResults }/>
 	</div>
 </div>
-
 <script lang="ts">
-	/* export let name: string; */
 	import { invoke } from '@tauri-apps/api/tauri'
-	import QueryZone from './QueryZone.svelte'
+	import QueryZone, { textContent }  from './QueryZone.svelte'
 	import SideMenu from './SideMenu.svelte'
-	import Results from './Results.svelte'
+	import FunctionsMenu from './FunctionsMenu.svelte';
+	import Results from './Results.svelte';
+	import Tabs from './Tabs.svelte';
 
-	let value = 0
-	function changeValue() {
-		invoke('randInt').then(function (res: number) {
-			value = Math.floor(20 * res)+1
+	let queryResults = '';
+	function eventPlay() {
+		return invoke('execute', {query: $textContent}).then((res: string) =>
+		{
+			queryResults = res
+		}, () => {
+			queryResults = "Something went wrong"
 		})
+	}
+
+	function eventStop() {
+		console.log('stop was clicked')
 	}
 </script>
 
 <style>
-	#side-menu {
-		width: 30%;
-		height: 600px;
+	.sidebar {
+		height: 100vh;
+        z-index: 999;
+		width: 20%;
+		min-width: 80px;
+		max-width: 320px;
+		top: 0px;
+		left: 0px;
 	}
 
-	#textarea {
-		width: 60%;
-		height: 60%;
+	.content {
+		height: 100vh;
+		width: fit-content;
 	}
 </style>
