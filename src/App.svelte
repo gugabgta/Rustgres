@@ -1,6 +1,6 @@
-<div class="wrapper row">
+<div class="wrapper">
 	<div class="sidebar">
-		<SideMenu />
+		<SideBar />
 	</div>
 	<div class="content">
 		<Tabs />
@@ -9,22 +9,26 @@
 			on:stop={ eventStop }
 		/>
 		<QueryZone />
-		<Results bind:queryResults={ queryResults }/>
+		<Results bind:queryResults={ queryResults } bind:update={ update }/>
 	</div>
 </div>
+<!-- <svelte:window on:resize={onResize} /> -->
 <script lang="ts">
 	import { invoke } from '@tauri-apps/api/tauri'
 	import QueryZone, { textContent }  from './QueryZone.svelte'
-	import SideMenu from './SideMenu.svelte'
+	import SideBar from './SideBar.svelte'
 	import FunctionsMenu from './FunctionsMenu.svelte';
 	import Results from './Results.svelte';
 	import Tabs from './Tabs.svelte';
 
+	let update: any
 	let queryResults = '';
+
 	function eventPlay() {
 		return invoke('execute', {query: $textContent}).then((res: string) =>
 		{
 			queryResults = res
+			update()
 		}, () => {
 			queryResults = "Something went wrong"
 		})
@@ -36,18 +40,26 @@
 </script>
 
 <style>
+	.wrapper {
+		display: flex;
+		flex-wrap: wrap;
+		width: 100vw;
+		background-color: rgb(46, 51, 56);
+	}
+
 	.sidebar {
 		height: 100vh;
         z-index: 999;
-		width: 20%;
-		min-width: 80px;
-		max-width: 320px;
+		width: 25%;
+		min-width: 200px;
+		max-width: 400px;
 		top: 0px;
 		left: 0px;
+		padding-right: -120px;
 	}
 
 	.content {
 		height: 100vh;
-		width: fit-content;
+		width: 75%;
 	}
 </style>

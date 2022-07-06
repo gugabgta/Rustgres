@@ -4,7 +4,7 @@
     {/if}
 
     {#if displayType == DisplayType.Value}
-        <table class="table table-secondary">
+        <table class="table table-dark table-striped table-hover table-bordered table-sm">
             <thead>
                 <tr>
                     <th></th>
@@ -40,11 +40,10 @@
     {#if displayType == DisplayType.Error}
         <div> Something went bad! </div>
     {/if}
-    <button on:click="{ update }" class="button is-white">update</button>
 </div>
 
 <script lang="ts">
-    export let queryResults: string = ''
+    export let queryResults = ''
 
     enum DisplayType {
         Value, Count, Bool, Error, None
@@ -56,7 +55,7 @@
     let changes: number = 0
     let displayType: DisplayType = DisplayType.None;
 
-    function update() {
+    export function update() {
         console.log(queryResults)
         json = JSON.parse(queryResults)
 

@@ -25,7 +25,7 @@
             color: "white",
             backgroundColor: "#034",
             height: "400px",
-            // width: "600px",
+            width: "200%",
         },
         ".cm-content": {
             caretColor: "#0e9",
@@ -35,7 +35,7 @@
             borderLeftColor: "#0e9"
         },
         "&.cm-focused .cm-selectionBackground, ::selection": {
-            backgroundColor: "#074"
+            backgroundColor: "#f80"
         },
         ".cm-gutters": {
             backgroundColor: "#045",
@@ -47,16 +47,14 @@
             overflow: "auto",
         },
         ".cm-editor": {
-            // width: "600px",
+            // width: "900px",
         }
     }, {dark: true})
-
-    let language = new Compartment, tabSize = new Compartment
 
     onMount(() =>
     {
         let startState = EditorState.create({
-            doc: "SELECT * FROM person WHERE id_person = 'gustavo'",
+            doc: "SELECT * FROM person WHERE name = 'gustavo'",
             extensions: [
                 keymap.of(defaultKeymap),
                 lineNumbers(),
@@ -72,21 +70,10 @@
             ],
         })
 
-        new EditorView({
-            doc: "console.log('hello')\n",
-            extensions: [basicSetup, javascript()],
-            parent: document.body
-        })
-
         let view = new EditorView({
             state: startState,
             parent: document.querySelector('#input'),
         })
-        console.log(view.state.doc.toString())
-        /*
-            cm.state.selection.ranges.map(
-            r => cm.state.sliceDoc(r.from, r.to))
-        */
     })
 </script>
 
